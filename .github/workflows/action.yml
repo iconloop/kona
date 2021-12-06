@@ -10,17 +10,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.9.7
-      - name: Install RocksDB
+          python-version: 3.9.6
+      - name: Install dependencies for rocksdb
         run: |
           sudo apt-get install python3-pip libgflags-dev libsnappy-dev zlib1g-dev libbz2-dev liblz4-dev libzstd-dev librocksdb-dev
-      - name: Upgrade Pip
-        run: |
-          python -m pip install --upgrade pip
-      - name: Install UnitTest dependencies
+      - name: Install dependencies
         run: |
           python -V
-          python -m pip install --upgrade pip
           pip install -e .[tests]
       - name: Run unit tests
         run: pytest -vx
@@ -31,17 +27,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.9.7
+          python-version: 3.9.6
       - name: Remove unnecessary dependencies for test
         run: |
           echo "" > requirements.txt
-      - name: Upgrade Pip
-        run: |
-          python -m pip install --upgrade pip
-      - name: Install lint dependencies
+      - name: Install dependencies
         run: |
           python -V
-          python -m pip install --upgrade pip
           pip install -e .[lint]
       - name: Lint
         run: flake8
