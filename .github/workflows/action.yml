@@ -14,9 +14,13 @@ jobs:
       - name: Install RocksDB
         run: |
           sudo apt-get install python3-pip libgflags-dev libsnappy-dev zlib1g-dev libbz2-dev liblz4-dev libzstd-dev librocksdb-dev
-      - name: Install dependencies
+      - name: Upgrade Pip
+        run: |
+          python -m pip install --upgrade pip
+      - name: Install UnitTest dependencies
         run: |
           python -V
+          python -m pip install --upgrade pip
           pip install -e .[tests]
       - name: Run unit tests
         run: pytest -vx
@@ -31,9 +35,13 @@ jobs:
       - name: Remove unnecessary dependencies for test
         run: |
           echo "" > requirements.txt
-      - name: Install dependencies
+      - name: Upgrade Pip
+        run: |
+          python -m pip install --upgrade pip
+      - name: Install lint dependencies
         run: |
           python -V
+          python -m pip install --upgrade pip
           pip install -e .[lint]
       - name: Lint
         run: flake8
