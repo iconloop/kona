@@ -11,6 +11,9 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
+      - name: Install RocksDB
+        run: |
+          sudo apt-get install python3-pip libgflags-dev libsnappy-dev zlib1g-dev libbz2-dev liblz4-dev libzstd-dev librocksdb-dev
       - name: Install dependencies
         run: |
           python -V
@@ -18,16 +21,19 @@ jobs:
       - name: Run unit tests
         run: pytest -vx
   lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
+      - name: Remove unnecessary dependencies for test
+        run: |
+          echo "" > requirements.txt
       - name: Install dependencies
         run: |
           python -V
           pip install -e .[lint]
-      - name: Run lint checks
+      - name: Lint
         run: flake8
