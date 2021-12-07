@@ -136,7 +136,7 @@ class KeyValueStore(abc.ABC):
         # utils.logger.info(f"New KeyValueStore. store_type={store_type}, uri={uri}")
 
         if store_type == KeyValueStore.STORE_TYPE_ROCKSDB:
-            from .key_value_store_rocksdb import KeyValueStoreRocksDB
+            from kona.key_value_store_rocksdb import KeyValueStoreRocksDB
             return KeyValueStoreRocksDB(uri, **kwargs)
         elif store_type == KeyValueStore.STORE_TYPE_DICT:
             raise ValueError("KeyValueStoreDict is just for development.")
