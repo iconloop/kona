@@ -1,0 +1,2 @@
+Yirgachefe @ git+https://git@github.com/iconloop/Yirgachefe.git@develop
+lbry-rocksdb
