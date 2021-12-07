@@ -4,9 +4,9 @@ import rocksdb
 import urllib.parse
 from pathlib import Path
 
-from .key_value_store import KeyValueStoreError
-from .key_value_store import KeyValueStoreWriteBatch, KeyValueStoreCancelableWriteBatch, KeyValueStore
-from .key_value_store import _validate_args_bytes, _validate_args_bytes_without_first
+from kona.key_value_store import KeyValueStoreError
+from kona.key_value_store import KeyValueStoreWriteBatch, KeyValueStoreCancelableWriteBatch, KeyValueStore
+from kona.key_value_store import _validate_args_bytes, _validate_args_bytes_without_first
 
 rocksdb_exceptions = [rocksdb.errors.NotFound,
                       rocksdb.errors.Corruption,
