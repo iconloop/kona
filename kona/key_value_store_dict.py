@@ -1,4 +1,5 @@
 import functools
+from typing import Tuple, Any
 
 from kona.key_value_store import KeyValueStoreError
 from kona.key_value_store import KeyValueStoreWriteBatch, KeyValueStoreCancelableWriteBatch, KeyValueStore
@@ -113,6 +114,11 @@ class KeyValueStoreDict(KeyValueStore):
     @_error_convert
     def destroy_store(self):
         self.close()
+
+    @_validate_args_bytes_without_first
+    @_error_convert
+    def key_may_exist(self, key: bytes) -> Tuple[bool, Any]:
+        pass
 
     @_error_convert
     def WriteBatch(self, sync=False) -> KeyValueStoreWriteBatch:

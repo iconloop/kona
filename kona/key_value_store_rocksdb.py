@@ -3,18 +3,20 @@ import gc
 import rocksdb
 import urllib.parse
 from pathlib import Path
+from typing import Tuple, Any
+from rocksdb import errors
 
 from kona.key_value_store import KeyValueStoreError
 from kona.key_value_store import KeyValueStoreWriteBatch, KeyValueStoreCancelableWriteBatch, KeyValueStore
 from kona.key_value_store import _validate_args_bytes, _validate_args_bytes_without_first
 
-rocksdb_exceptions = [rocksdb.errors.NotFound,
-                      rocksdb.errors.Corruption,
-                      rocksdb.errors.NotSupported,
-                      rocksdb.errors.InvalidArgument,
-                      rocksdb.errors.RocksIOError,
-                      rocksdb.errors.MergeInProgress,
-                      rocksdb.errors.Incomplete]
+rocksdb_exceptions = [errors.NotFound,
+                      errors.Corruption,
+                      errors.NotSupported,
+                      errors.InvalidArgument,
+                      errors.RocksIOError,
+                      errors.MergeInProgress,
+                      errors.Incomplete]
 
 
 def _error_convert(func):
@@ -138,6 +140,11 @@ class KeyValueStoreRocksDB(KeyValueStore):
             path.rmdir()
 
         rm_tree(Path(self._path))
+
+    @_validate_args_bytes_without_first
+    @_error_convert
+    def key_may_exist(self, key: bytes) -> Tuple[bool, Any]:
+        return self._db.key_may_exist(key, fetch=True)
 
     @_error_convert
     def WriteBatch(self, sync=False) -> KeyValueStoreWriteBatch:
