@@ -1,6 +1,7 @@
 import abc
 import functools
-from typing import Union
+from typing import Union, Tuple, Any
+
 from yirgachefe import config
 
 
@@ -132,9 +133,6 @@ class KeyValueStore(abc.ABC):
         if store_type is None:
             store_type = config.DEFAULT_KEY_VALUE_STORE_TYPE
 
-        # FIXME: Using Log lib.
-        # utils.logger.info(f"New KeyValueStore. store_type={store_type}, uri={uri}")
-
         if store_type == KeyValueStore.STORE_TYPE_ROCKSDB:
             from kona.key_value_store_rocksdb import KeyValueStoreRocksDB
             return KeyValueStoreRocksDB(uri, **kwargs)
@@ -187,6 +185,11 @@ class KeyValueStore(abc.ABC):
 
         If the data are files, the files may be deleted.
         """
+        raise NotImplementedError("destroy_store() function is interface method")
+
+    @abc.abstractmethod
+    def key_may_exist(self, key: bytes) -> Tuple[bool, Any]:
+        """If the key definitely does not exist in the database, then this method returns False, else True."""
         raise NotImplementedError("destroy_store() function is interface method")
 
     @abc.abstractmethod
