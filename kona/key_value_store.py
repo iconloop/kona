@@ -1,6 +1,7 @@
 import abc
 import functools
 from typing import Union, Tuple, Any
+
 from yirgachefe import config
 
 
@@ -131,9 +132,6 @@ class KeyValueStore(abc.ABC):
     def new(uri: str, store_type: str = None, **kwargs) -> 'KeyValueStore':
         if store_type is None:
             store_type = config.DEFAULT_KEY_VALUE_STORE_TYPE
-
-        # FIXME: Using Log lib.
-        # utils.logger.info(f"New KeyValueStore. store_type={store_type}, uri={uri}")
 
         if store_type == KeyValueStore.STORE_TYPE_ROCKSDB:
             from kona.key_value_store_rocksdb import KeyValueStoreRocksDB

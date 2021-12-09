@@ -1,9 +1,10 @@
 import functools
 import gc
-import rocksdb
 import urllib.parse
 from pathlib import Path
 from typing import Tuple, Any
+
+import rocksdb
 from rocksdb import errors
 
 from kona.key_value_store import KeyValueStoreError

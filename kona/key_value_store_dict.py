@@ -1,3 +1,5 @@
+"""KeyValueStoreDict classes are components for development"""
+
 import functools
 from typing import Tuple, Any
 
