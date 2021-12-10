@@ -19,18 +19,18 @@ $ pip install kona
 from kona.key_value_store import KeyValueStore
 
 db = KeyValueStore.new(
-    "file://./key_value_store_test_database",
-    store_type="rocksdb",
+    'file://./key_value_store_test_database',
+    store_type='rocksdb',
     create_if_missing=True
 )
 
-db.put(b"foo", b"bar")
-print(db.get(b"foo"))
+db.put(b'foo', b'bar')
+print(db.get(b'foo'))
 db.close()
 db.destroy_store()
 
 # Result
-# b"bar"
+# b'bar'
 ~~~
 
 ### Batch
@@ -39,8 +39,8 @@ You can write to DataBase at a specific point in time using `WriteBatch()`.
 from kona.key_value_store import KeyValueStore
 
 db = KeyValueStore.new(
-    "file://./key_value_store_test_database",
-    store_type="rocksdb",
+    'file://./key_value_store_test_database',
+    store_type='rocksdb',
     create_if_missing=True
 )
 
@@ -51,14 +51,14 @@ batch.put(b'test_key_2', b'test_value_2')
 
 batch.write()
 
-print(db.get(b"test_key_1"))
-print(db.get(b"test_key_2"))
+print(db.get(b'test_key_1'))
+print(db.get(b'test_key_2'))
 
 db.destroy_store()
 
 # Result
-# test_value_1
-# test_value_2
+# b'test_value_1'
+# b'test_value_2'
 ~~~
 
 ### CancelableBatch
@@ -67,17 +67,17 @@ You can cancel data written in batches using `CancelableWriteBatch()`.
 from kona.key_value_store import KeyValueStore
 
 db = KeyValueStore.new(
-    "file://./key_value_store_test_database",
-    store_type="rocksdb",
+    'file://./key_value_store_test_database',
+    store_type='rocksdb',
     create_if_missing=True
 )
 
 test_items = {
-    b"test_key_1": b"test_value_1",
-    b"test_key_2": b"test_value_2",
-    b"test_key_3": b"test_value_3",
-    b"test_key_4": b"test_value_4",
-    b"test_key_5": b"test_value_5",
+    b'test_key_1': b'test_value_1',
+    b'test_key_2': b'test_value_2',
+    b'test_key_3': b'test_value_3',
+    b'test_key_4': b'test_value_4',
+    b'test_key_5': b'test_value_5',
 }
 
 for key, value in test_items.items():
@@ -90,19 +90,13 @@ cancelable_batch.put(b'cancelable_key_2', b'cancelable_value_2')
 cancelable_batch.put(b'test_key_4', b'edited_test_value_4')
 cancelable_batch.write()
 
-edited_test_items = test_items.copy()
-edited_test_items[b'cancelable_key_1'] = b'cancelable_value_1'
-edited_test_items[b'test_key_2'] = b'edited_test_value_2'
-edited_test_items[b'cancelable_key_2'] = b'cancelable_value_2'
-edited_test_items[b'test_key_4'] = b'edited_test_value_4'
-
 for key, value in db.Iterator():
-    print(f"Before Cancel: key={key}, value={value}")
+    print(f'Before Cancel: key={key}, value={value}')
 
 cancelable_batch.cancel()
 
 for key, value in db.Iterator():
-    print(f"After Cancel: key={key}, value={value}")
+    print(f'After Cancel: key={key}, value={value}')
 
 db.destroy_store()
 
