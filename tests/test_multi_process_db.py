@@ -2,11 +2,11 @@ import os
 from multiprocessing import Process
 from pathlib import Path
 from shutil import rmtree
+from time import sleep
 
 import pytest
 import rocksdb
 from rocksdb.errors import RocksIOError
-from time import sleep
 
 
 class TestDBPath:
