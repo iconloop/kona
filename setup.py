@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from setuptools import setup, find_packages
 
 req_tests = ["pytest"]
@@ -11,13 +13,20 @@ with open('requirements.txt', 'r') as f:
         ] if s != ''
     ]
 
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
+
 setup_options = {
     "name": "kona",
     "version": "0.1.0",
+    "utl": "https://github.com/iconloop/kona",
     "description": "Convenience of key value store",
-    'author': "ICONLOOP",
+    "long_description": long_description,
+    "long_description_content_type": "text/markdown",
+    "author": "ICONLOOP",
+    "author_email": "t_core@iconloop.com",
     "packages": find_packages(),
-    "python_requires": ">=3.9.0",
+    "python_requires": ">=3.9.7",
     "install_requires": requires,
     "extras_require": {
         "tests": req_tests,
