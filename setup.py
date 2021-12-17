@@ -18,13 +18,13 @@ long_description = (this_directory / "README.md").read_text()
 
 setup_options = {
     "name": "kona",
-    "version": "0.1.0",
-    "utl": "https://github.com/iconloop/kona",
+    "version": "0.1.1",
+    "url": "https://github.com/iconloop/kona",
+    "author": "ICONLOOP",
+    "author_email": "t_core@iconloop.com",
     "description": "Convenience of key value store",
     "long_description": long_description,
     "long_description_content_type": "text/markdown",
-    "author": "ICONLOOP",
-    "author_email": "t_core@iconloop.com",
     "packages": find_packages(),
     "python_requires": ">=3.9.7",
     "install_requires": requires,
