@@ -3,7 +3,7 @@ It is a project created to manage various key-value stores.
 Currently, only RocksDB is supported, but we will continue to increase the number of key-value stores that can be supported.
 
 ## Prerequisite
-- python 3.9.7
+- python 3.7.5
 
 ## Supported Key-Value Store
 - RocksDB
