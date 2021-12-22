@@ -18,7 +18,7 @@ long_description = (this_directory / "README.md").read_text()
 
 setup_options = {
     "name": "kona",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "url": "https://github.com/iconloop/kona",
     "author": "ICONLOOP",
     "author_email": "t_core@iconloop.com",
@@ -26,7 +26,7 @@ setup_options = {
     "long_description": long_description,
     "long_description_content_type": "text/markdown",
     "packages": find_packages(),
-    "python_requires": ">=3.9.7",
+    "python_requires": ">=3.7.5",
     "install_requires": requires,
     "extras_require": {
         "tests": req_tests,
