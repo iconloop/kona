@@ -1,2 +1,2 @@
 yirgachefe
-lbry-rocksdb
+python-rocksdb
