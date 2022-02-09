@@ -1,2 +1,2 @@
 yirgachefe
-python-rocksdb
+python-rocksdb==0.7.0
