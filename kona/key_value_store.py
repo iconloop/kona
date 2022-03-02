@@ -126,6 +126,7 @@ class KeyValueStoreCancelableWriteBatch(abc.ABC):
 
 class KeyValueStore(abc.ABC):
     STORE_TYPE_ROCKSDB = 'rocksdb'
+    STORE_TYPE_LMDB = 'lmdb'
     STORE_TYPE_DICT = 'dict'
 
     @staticmethod
@@ -136,6 +137,9 @@ class KeyValueStore(abc.ABC):
         if store_type == KeyValueStore.STORE_TYPE_ROCKSDB:
             from kona.key_value_store_rocksdb import KeyValueStoreRocksDB
             return KeyValueStoreRocksDB(uri, **kwargs)
+        elif store_type == KeyValueStore.STORE_TYPE_LMDB:
+            from kona.key_value_store_lmdb import KeyValueStoreLMDB
+            return KeyValueStoreLMDB(uri, **kwargs)
         elif store_type == KeyValueStore.STORE_TYPE_DICT:
             raise ValueError("KeyValueStoreDict is just for development.")
         else:
