@@ -34,6 +34,11 @@ setup_options = {
         "dev": req_dev
     },
     "package_dir": {"": "."},
+    "entry_points": {
+        "console_scripts": [
+            "benchmark=benchmark:main"
+        ]
+    }
 }
 
 setup(**setup_options)
