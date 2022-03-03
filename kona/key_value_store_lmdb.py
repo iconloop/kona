@@ -164,7 +164,7 @@ class KeyValueStoreLMDB(KeyValueStore):
     @_validate_args_bytes_without_first
     @_error_convert
     def key_may_exist(self, key: bytes) -> Tuple[bool, Any]:
-        pass
+        return NotImplemented
 
     @_error_convert
     def WriteBatch(self, sync=False) -> KeyValueStoreWriteBatch:
