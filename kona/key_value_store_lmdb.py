@@ -110,7 +110,7 @@ class KeyValueStoreLMDB(KeyValueStore):
         if uri_obj.scheme != 'file':
             raise ValueError(f"Support file path URI only (ex. file:///xxx/xxx). uri={uri}")
         self._path = f"{(uri_obj.netloc if uri_obj.netloc else '')}{uri_obj.path}"
-        self._db = self._new_db(self._path, **kwargs)
+        self._db = self._new_db(self._path)
 
     @_error_convert
     def _new_db(self, path) -> lmdb.Environment:
@@ -164,7 +164,7 @@ class KeyValueStoreLMDB(KeyValueStore):
     @_validate_args_bytes_without_first
     @_error_convert
     def key_may_exist(self, key: bytes) -> Tuple[bool, Any]:
-        return self._db.key_may_exist(key, fetch=True)
+        pass
 
     @_error_convert
     def WriteBatch(self, sync=False) -> KeyValueStoreWriteBatch:

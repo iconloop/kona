@@ -1,14 +1,20 @@
 # kona
+
 It is a project created to manage various key-value stores.  
-Currently, only RocksDB is supported, but we will continue to increase the number of key-value stores that can be supported.
+Currently, only RocksDB is supported, but we will continue to increase the number of key-value stores that can be
+supported.
 
 ## Prerequisite
-- python 3.7.5
+
+- python 3.9.x
 
 ## Supported Key-Value Store
-- RocksDB
+
+- RocksDB v6.26.1
+- LMDB v0.9.x
 
 ## Installation
+
 ~~~
 $ pip install kona
 ~~~
