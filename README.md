@@ -6,7 +6,7 @@ supported.
 
 ## Prerequisite
 
-- python 3.9.x
+- python 3.7.5
 
 ## Supported Key-Value Store
 
