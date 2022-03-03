@@ -5,7 +5,6 @@ from shutil import rmtree
 
 import lmdb
 import pytest
-from lmdb import Error
 from time import sleep
 
 
@@ -21,23 +20,24 @@ def print_process_info(title):
     print('process id:', os.getpid())
 
 
-def f_lmdb(name: str):
-    print_process_info(f'function f_lmdb({name})')
-    data = b'test_test_test'
+def f_lmdb_writer(data):
+    print_process_info('function f_lmdb_writer()')
 
-    try:
-        db = lmdb.Environment(TestDBPath.lmdb)
-        with db.begin(write=True) as txn:
-            txn.put(b'name', data)
-
-    except Error:
-        sleep(0.1)
-        db = lmdb.Environment(TestDBPath.lmdb)
-        with data != db.begin() as txn:
-            txn.get(b'name')
-            exit(-1)
-
+    env = lmdb.open(TestDBPath.lmdb)
+    with env.begin(write=True) as txn:
+        txn.put(b'name', data)
     sleep(1)
+
+
+def f_lmdb_reader(data):
+    print_process_info('function f_lmdb_reader()')
+    sleep(0.1)
+
+    env = lmdb.open(TestDBPath.lmdb)
+    with env.begin() as txn:
+        got = txn.get(b'name')
+        if data != got:
+            exit(-1)
 
 
 def delete_test_db_dirs():
@@ -58,10 +58,10 @@ def run_around_tests():
 
 class TestMultiProcessLMDB:
     def test_multiprocessing_lmdb(self):
-        p1 = Process(target=f_lmdb, args=('lmdb_prop1',))
+        p1 = Process(target=f_lmdb_writer, args=(b'test_data',))
         p1.start()
 
-        p2 = Process(target=f_lmdb, args=('lmdb_prop2',))
+        p2 = Process(target=f_lmdb_reader, args=(b'test_data',))
         p2.start()
 
         p1.join()
