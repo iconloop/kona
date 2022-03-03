@@ -10,7 +10,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7.5
+          python-version: 3.9.0
       - name: Install dependencies for rocksdb
         run: |
           sudo apt-get install python3-pip libgflags-dev libsnappy-dev zlib1g-dev libbz2-dev liblz4-dev libzstd-dev librocksdb-dev
@@ -30,7 +30,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7.5
+          python-version: 3.9.0
       - name: Remove unnecessary dependencies for test
         run: |
           echo "" > requirements.txt
