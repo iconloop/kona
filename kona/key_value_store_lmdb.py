@@ -110,11 +110,26 @@ class KeyValueStoreLMDB(KeyValueStore):
         if uri_obj.scheme != 'file':
             raise ValueError(f"Support file path URI only (ex. file:///xxx/xxx). uri={uri}")
         self._path = f"{(uri_obj.netloc if uri_obj.netloc else '')}{uri_obj.path}"
-        self._db = self._new_db(self._path)
+        self._db = self._new_db(self._path, **kwargs)
 
     @_error_convert
-    def _new_db(self, path) -> lmdb.Environment:
-        return lmdb.Environment(path)
+    def _new_db(self, path, **kwargs) -> lmdb.Environment:
+        return lmdb.Environment(path,
+                                map_size=kwargs.get('map_size', 1073741824),  # map_size = 1GB
+                                subdir=kwargs.get('subdir', True),
+                                readonly=kwargs.get('readonly', False),
+                                metasync=kwargs.get('metasync', True),
+                                sync=kwargs.get('sync', True),
+                                mode=kwargs.get('mode', int('0755', 8)),
+                                map_async=kwargs.get('map_async', False),
+                                create=kwargs.get('create', True),
+                                readahead=kwargs.get('readahead', True),
+                                writemap=kwargs.get('writemap', False),
+                                meminit=kwargs.get('meminit', True),
+                                max_readers=kwargs.get('max_readers', 126),
+                                max_dbs=kwargs.get('max_dbs', 0),
+                                max_spare_txns=kwargs.get('max_spare_txns', 1),
+                                lock=kwargs.get('lock', True), )
 
     @_validate_args_bytes_without_first
     @_error_convert
