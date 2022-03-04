@@ -1,14 +1,20 @@
 # kona
+
 It is a project created to manage various key-value stores.  
-Currently, only RocksDB is supported, but we will continue to increase the number of key-value stores that can be supported.
+Currently, only RocksDB is supported, but we will continue to increase the number of key-value stores that can be
+supported.
 
 ## Prerequisite
-- python 3.7.5
+
+- python 3.9.x
 
 ## Supported Key-Value Store
-- RocksDB
+
+- RocksDB v6.26.1
+- LMDB v0.9.x
 
 ## Installation
+
 ~~~
 $ pip install kona
 ~~~
@@ -115,4 +121,21 @@ db.destroy_store()
 # After Cancel: key=b'test_key_3', value=b'test_value_3'
 # After Cancel: key=b'test_key_4', value=b'test_value_4'
 # After Cancel: key=b'test_key_5', value=b'test_value_5'
+~~~
+
+## Benchmark
+You can run the benchmark with the following command
+~~~
+$ benchmark
+~~~
+
+### LMDB Options
+As a result of our benchmarks, we found the following lmdb options for performance. 
+However, stability is under review and has not been reflected at this time. 
+It will be provided for users to set in a future update. 
+([LMDB Options](https://lmdb.readthedocs.io/en/release/#environment-class))
+~~~
+writemap = True
+map_async = True
+sync = False
 ~~~

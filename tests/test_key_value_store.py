@@ -5,7 +5,7 @@ from kona.key_value_store import KeyValueStoreError, KeyValueStore
 
 
 class TestKeyValueStore:
-    store_types = ['dict', 'rocksdb']
+    store_types = ['dict', 'rocksdb', 'lmdb']
 
     def _get_test_items(self, count: int = 5):
         test_items = dict()

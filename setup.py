@@ -26,7 +26,7 @@ setup_options = {
     "long_description": long_description,
     "long_description_content_type": "text/markdown",
     "packages": find_packages(),
-    "python_requires": ">=3.7.5",
+    "python_requires": ">=3.9.0",
     "install_requires": requires,
     "extras_require": {
         "tests": req_tests,
@@ -34,6 +34,11 @@ setup_options = {
         "dev": req_dev
     },
     "package_dir": {"": "."},
+    "entry_points": {
+        "console_scripts": [
+            "benchmark=benchmark:main"
+        ]
+    }
 }
 
 setup(**setup_options)
