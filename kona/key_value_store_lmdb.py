@@ -115,7 +115,7 @@ class KeyValueStoreLMDB(KeyValueStore):
     @_error_convert
     def _new_db(self, path, **kwargs) -> lmdb.Environment:
         return lmdb.Environment(path,
-                                map_size=kwargs.get('map_size', 1073741824),  # map_size = 1GB
+                                map_size=kwargs.get('map_size', 10485760),
                                 subdir=kwargs.get('subdir', True),
                                 readonly=kwargs.get('readonly', False),
                                 metasync=kwargs.get('metasync', True),
