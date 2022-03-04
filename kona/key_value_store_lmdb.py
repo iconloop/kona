@@ -1,7 +1,7 @@
 import functools
 import urllib.parse
 from pathlib import Path
-from typing import Tuple, Any
+from typing import Tuple, Any, Optional
 
 import gc
 import lmdb
@@ -101,7 +101,7 @@ class _KeyValueStoreCancelableWriteBatchLMDB(KeyValueStoreCancelableWriteBatch):
         self._original_items.clear()
 
     def close(self):
-        self._original_items: dict = None
+        self._original_items: Optional[dict] = None
 
 
 class KeyValueStoreLMDB(KeyValueStore):
@@ -112,24 +112,19 @@ class KeyValueStoreLMDB(KeyValueStore):
         self._path = f"{(uri_obj.netloc if uri_obj.netloc else '')}{uri_obj.path}"
         self._db = self._new_db(self._path, **kwargs)
 
+    @staticmethod
+    def _lmdb_options(**kwargs):
+        valid_options = {}
+        for key, value in kwargs.items():
+            if key in ['path', 'map_size', 'subdir', 'readonly', 'metasync', 'sync',
+                       'map_async', 'mode', 'create', 'readahead', 'writemap', 'meminit',
+                       'max_readers', 'max_dbs', 'max_spare_txns', 'lock']:
+                valid_options[key] = value
+        return valid_options
+
     @_error_convert
     def _new_db(self, path, **kwargs) -> lmdb.Environment:
-        return lmdb.Environment(path,
-                                map_size=kwargs.get('map_size', 10485760),
-                                subdir=kwargs.get('subdir', True),
-                                readonly=kwargs.get('readonly', False),
-                                metasync=kwargs.get('metasync', True),
-                                sync=kwargs.get('sync', True),
-                                mode=kwargs.get('mode', int('0755', 8)),
-                                map_async=kwargs.get('map_async', False),
-                                create=kwargs.get('create', True),
-                                readahead=kwargs.get('readahead', True),
-                                writemap=kwargs.get('writemap', False),
-                                meminit=kwargs.get('meminit', True),
-                                max_readers=kwargs.get('max_readers', 126),
-                                max_dbs=kwargs.get('max_dbs', 0),
-                                max_spare_txns=kwargs.get('max_spare_txns', 1),
-                                lock=kwargs.get('lock', True), )
+        return lmdb.Environment(path, **KeyValueStoreLMDB._lmdb_options(**kwargs))
 
     @_validate_args_bytes_without_first
     @_error_convert
