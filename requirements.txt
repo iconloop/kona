@@ -1,3 +1,4 @@
+Cython==0.29.36
 yirgachefe
 python-rocksdb==0.7.0
 lmdb
