@@ -1,0 +1,91 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kona"
+description = ''
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "PARAMETA Corp", email = "t_pds@parametacorp.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "faust-streaming-rocksdb~=0.9.2",
+  "lmdb==1.4.1",
+  "loguru==0.7.0",
+  "pydantic[dotenv]==1.10.7",
+]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = [
+  "pytest~=7.2.2",
+  "pytest-asyncio==0.21.1",
+  "pytest-cov~=4.0.0",
+  "pytest-mock~=3.10.0",
+  "anyio[trio]~=3.7.0",
+]
+doc = [
+  "mkdocs-material~=9.1.18",
+]
+all = [
+  "kona[doc, dev]",
+]
+
+[project.urls]
+Documentation = "https://github.com/iconloop/kona#readme"
+Issues = "https://github.com/iconloop/kona/issues"
+Source = "https://github.com/iconloop/kona"
+
+[tool.hatch.version]
+path = "kona/__about__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "pytest",
+  "pytest-cov",
+]
+
+[tool.hatch.envs.default.scripts]
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=app {args}"
+no-cov = "cov --no-cov {args}"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["311"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.coverage.run]
+branch = true
+parallel = true
+omit = [
+  "kona/__about__.py",
+  "*/alembic/*",
+  "*/tests/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+
+[tool.black]
+line-length = 120
+target-version = ["py311"]
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"

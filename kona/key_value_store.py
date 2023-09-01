@@ -1,8 +1,8 @@
 import abc
 import functools
-from typing import Union, Tuple, Any
+from typing import Any, Tuple, Union
 
-from yirgachefe import config
+from kona.config.config import settings
 
 
 class KeyValueStoreError(Exception):
@@ -132,7 +132,7 @@ class KeyValueStore(abc.ABC):
     @staticmethod
     def new(uri: str, store_type: str = None, **kwargs) -> 'KeyValueStore':
         if store_type is None:
-            store_type = config.DEFAULT_KEY_VALUE_STORE_TYPE
+            store_type = settings.DEFAULT_KEY_VALUE_STORE_TYPE
 
         if store_type == KeyValueStore.STORE_TYPE_ROCKSDB:
             from kona.key_value_store_rocksdb import KeyValueStoreRocksDB

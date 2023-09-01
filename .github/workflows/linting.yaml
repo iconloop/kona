@@ -1,0 +1,24 @@
+name: Lint
+
+on: [pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: pip
+      - name: check sort imports with isort
+        uses: isort/isort-action@v1
+        with:
+          configuration: "--check-only --diff --verbose"
+          sortPaths: "./kona ./tests"
+
+      - name: check code formatting with black
+        uses: psf/black@stable
+        with:
+          options: "--check --verbose"
+          src: "./kona ./tests"

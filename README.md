@@ -6,12 +6,12 @@ supported.
 
 ## Prerequisite
 
-- python 3.9.x
+- python >= 3.11
 
 ## Supported Key-Value Store
 
 - RocksDB v6.26.1
-- LMDB v0.9.x
+- LMDB v1.4.x
 
 ## Installation
 
