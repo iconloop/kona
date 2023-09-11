@@ -2,7 +2,7 @@ import abc
 import functools
 from typing import Any, Tuple, Union
 
-from kona.config.config import settings
+from kona.config import settings
 
 
 class KeyValueStoreError(Exception):

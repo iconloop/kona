@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "kona"
 description = ''
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.8"
 license = "MIT"
 keywords = []
 authors = [
@@ -15,9 +15,11 @@ authors = [
 classifiers = [
   "Development Status :: 4 - Beta",
   "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
   "faust-streaming-rocksdb~=0.9.2",
@@ -84,7 +86,7 @@ exclude_lines = [
 
 [tool.black]
 line-length = 120
-target-version = ["py311"]
+target-version = ["py38", "py39", "py310", "py311"]
 include = '\.pyi?$'
 
 [tool.isort]

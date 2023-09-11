@@ -6,7 +6,7 @@ supported.
 
 ## Prerequisite
 
-- python >= 3.11
+- python >= 3.8
 
 ## Supported Key-Value Store
 
@@ -138,4 +138,10 @@ It will be provided for users to set in a future update.
 writemap = True
 map_async = True
 sync = False
+~~~
+
+### Log
+Add the below configuration for loguru.
+~~~
+KONA_LOG_ENABLE_LOGGER=[true|false]
 ~~~
