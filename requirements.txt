@@ -1,3 +1,0 @@
-yirgachefe
-faust-streaming-rocksdb~=0.9.2
-lmdb

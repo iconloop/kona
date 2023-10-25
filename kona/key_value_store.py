@@ -1,8 +1,8 @@
 import abc
 import functools
-from typing import Union, Tuple, Any
+from typing import Any, Tuple, Union
 
-from yirgachefe import config
+from kona.config import settings
 
 
 class KeyValueStoreError(Exception):
@@ -66,7 +66,7 @@ class KeyValueStoreCancelableWriteBatch(abc.ABC):
     # Store: key1/value1, key2/value2
     """
 
-    def __init__(self, store: 'KeyValueStore', sync=False):
+    def __init__(self, store: "KeyValueStore", sync=False):
         self._store = store
         self._batch = self._store.WriteBatch(sync=sync)
         self._sync = sync
@@ -125,20 +125,22 @@ class KeyValueStoreCancelableWriteBatch(abc.ABC):
 
 
 class KeyValueStore(abc.ABC):
-    STORE_TYPE_ROCKSDB = 'rocksdb'
-    STORE_TYPE_LMDB = 'lmdb'
-    STORE_TYPE_DICT = 'dict'
+    STORE_TYPE_ROCKSDB = "rocksdb"
+    STORE_TYPE_LMDB = "lmdb"
+    STORE_TYPE_DICT = "dict"
 
     @staticmethod
-    def new(uri: str, store_type: str = None, **kwargs) -> 'KeyValueStore':
+    def new(uri: str, store_type: str = None, **kwargs) -> "KeyValueStore":
         if store_type is None:
-            store_type = config.DEFAULT_KEY_VALUE_STORE_TYPE
+            store_type = settings.DEFAULT_KEY_VALUE_STORE_TYPE
 
         if store_type == KeyValueStore.STORE_TYPE_ROCKSDB:
             from kona.key_value_store_rocksdb import KeyValueStoreRocksDB
+
             return KeyValueStoreRocksDB(uri, **kwargs)
         elif store_type == KeyValueStore.STORE_TYPE_LMDB:
             from kona.key_value_store_lmdb import KeyValueStoreLMDB
+
             return KeyValueStoreLMDB(uri, **kwargs)
         elif store_type == KeyValueStore.STORE_TYPE_DICT:
             raise ValueError("KeyValueStoreDict is just for development.")

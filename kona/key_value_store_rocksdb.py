@@ -2,22 +2,29 @@ import functools
 import gc
 import urllib.parse
 from pathlib import Path
-from typing import Tuple, Any
+from typing import Any, Tuple
 
 import rocksdb
 from rocksdb import errors
 
-from kona.key_value_store import KeyValueStoreError
-from kona.key_value_store import KeyValueStoreWriteBatch, KeyValueStoreCancelableWriteBatch, KeyValueStore
-from kona.key_value_store import _validate_args_bytes, _validate_args_bytes_without_first
+from kona.key_value_store import (
+    KeyValueStore,
+    KeyValueStoreCancelableWriteBatch,
+    KeyValueStoreError,
+    KeyValueStoreWriteBatch,
+    _validate_args_bytes,
+    _validate_args_bytes_without_first,
+)
 
-rocksdb_exceptions = [errors.NotFound,
-                      errors.Corruption,
-                      errors.NotSupported,
-                      errors.InvalidArgument,
-                      errors.RocksIOError,
-                      errors.MergeInProgress,
-                      errors.Incomplete]
+rocksdb_exceptions = [
+    errors.NotFound,
+    errors.Corruption,
+    errors.NotSupported,
+    errors.InvalidArgument,
+    errors.RocksIOError,
+    errors.MergeInProgress,
+    errors.Incomplete,
+]
 
 
 def _error_convert(func):
@@ -91,7 +98,7 @@ class _KeyValueStoreCancelableWriteBatchRocksDB(KeyValueStoreCancelableWriteBatc
 class KeyValueStoreRocksDB(KeyValueStore):
     def __init__(self, uri: str, **kwargs):
         uri_obj = urllib.parse.urlparse(uri)
-        if uri_obj.scheme != 'file':
+        if uri_obj.scheme != "file":
             raise ValueError(f"Support file path URI only (ex. file:///xxx/xxx). uri={uri}")
         self._path = f"{(uri_obj.netloc if uri_obj.netloc else '')}{uri_obj.path}"
         self._db = self._new_db(self._path, **kwargs)
@@ -165,7 +172,7 @@ class KeyValueStoreRocksDB(KeyValueStore):
         :param kwargs:  # This parameter is not handled in rocksdb.
         :return:
         """
-        if 'start' in kwargs or 'stop' in kwargs:
+        if "start" in kwargs or "stop" in kwargs:
             raise ValueError("Use start_key and stop_key arguments instead of start and stop arguments")
 
         it = self._db.iteritems()

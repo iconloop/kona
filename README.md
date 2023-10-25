@@ -6,12 +6,12 @@ supported.
 
 ## Prerequisite
 
-- python 3.9.x
+- python >= 3.8
 
 ## Supported Key-Value Store
 
 - RocksDB v6.26.1
-- LMDB v0.9.x
+- LMDB v1.4.x
 
 ## Installation
 
@@ -138,4 +138,10 @@ It will be provided for users to set in a future update.
 writemap = True
 map_async = True
 sync = False
+~~~
+
+### Log
+Add the below configuration for loguru.
+~~~
+KONA_LOG_ENABLE_LOGGER=[true|false]
 ~~~

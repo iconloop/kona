@@ -1,17 +1,17 @@
 """Test KeyValueStore class"""
 import pytest
 
-from kona.key_value_store import KeyValueStoreError, KeyValueStore
+from kona.key_value_store import KeyValueStore, KeyValueStoreError
 
 
 class TestKeyValueStore:
-    store_types = ['dict', 'rocksdb', 'lmdb']
+    store_types = ["dict", "rocksdb", "lmdb"]
 
     def _get_test_items(self, count: int = 5):
         test_items = dict()
         for i in range(1, count + 1):
-            key = bytes(f"test_key_{i}", encoding='utf-8')
-            value = bytes(f"test_value_{i}", encoding='utf-8')
+            key = bytes(f"test_key_{i}", encoding="utf-8")
+            value = bytes(f"test_value_{i}", encoding="utf-8")
             test_items[key] = value
         return test_items
 
@@ -19,6 +19,7 @@ class TestKeyValueStore:
         try:
             if store_type == KeyValueStore.STORE_TYPE_DICT:
                 from kona.key_value_store_dict import KeyValueStoreDict
+
                 print(f"New KeyValueStore. store_type={store_type}, uri={uri}")
                 return KeyValueStoreDict()
 
@@ -44,20 +45,17 @@ class TestKeyValueStore:
             assert store.get(key) == value
 
         with pytest.raises(KeyError):
-            store.get(b'unknown_key')
+            store.get(b"unknown_key")
 
-        assert store.get(b'unknown_key', default=b'test_default_value') == b'test_default_value'
+        assert store.get(b"unknown_key", default=b"test_default_value") == b"test_default_value"
 
         kwargs = {}
 
-        if store_type == 'dict':
+        if store_type == "dict":
             container = tuple(test_items.keys())
         else:
-            kwargs.update({
-                'start_key': b'test_key_2',
-                'stop_key': b'test_key_4'
-            })
-            container = (b'test_key_2', b'test_key_3', b'test_key_4')
+            kwargs.update({"start_key": b"test_key_2", "stop_key": b"test_key_4"})
+            container = (b"test_key_2", b"test_key_3", b"test_key_4")
         expect_count = len(container)
 
         count = 0
@@ -82,7 +80,7 @@ class TestKeyValueStore:
         # delete
         #
 
-        del_key = b'test_key_2'
+        del_key = b"test_key_2"
         del test_items[del_key]
         store.delete(del_key)
         with pytest.raises(KeyError):
@@ -103,17 +101,17 @@ class TestKeyValueStore:
         store = self._new_store("file://./key_value_store_test_write_batch", store_type=store_type)
 
         batch = store.WriteBatch()
-        batch.put(b'test_key_1', b'test_value_1')
-        batch.put(b'test_key_2', b'test_value_2')
+        batch.put(b"test_key_1", b"test_value_1")
+        batch.put(b"test_key_2", b"test_value_2")
 
         with pytest.raises(KeyError):
-            store.get(b'test_key_1')
+            store.get(b"test_key_1")
         with pytest.raises(KeyError):
-            store.get(b'test_key_2')
+            store.get(b"test_key_2")
 
         batch.write()
-        assert store.get(b'test_key_1') == b'test_value_1'
-        assert store.get(b'test_key_2') == b'test_value_2'
+        assert store.get(b"test_key_1") == b"test_value_1"
+        assert store.get(b"test_key_2") == b"test_value_2"
 
         store.destroy_store()
 
@@ -127,17 +125,17 @@ class TestKeyValueStore:
             store.put(key, value)
 
         cancelable_batch = store.CancelableWriteBatch()
-        cancelable_batch.put(b'cancelable_key_1', b'cancelable_value_1')
-        cancelable_batch.put(b'test_key_2', b'edited_test_value_2')
-        cancelable_batch.put(b'cancelable_key_2', b'cancelable_value_2')
-        cancelable_batch.put(b'test_key_4', b'edited_test_value_4')
+        cancelable_batch.put(b"cancelable_key_1", b"cancelable_value_1")
+        cancelable_batch.put(b"test_key_2", b"edited_test_value_2")
+        cancelable_batch.put(b"cancelable_key_2", b"cancelable_value_2")
+        cancelable_batch.put(b"test_key_4", b"edited_test_value_4")
         cancelable_batch.write()
 
         edited_test_items = test_items.copy()
-        edited_test_items[b'cancelable_key_1'] = b'cancelable_value_1'
-        edited_test_items[b'test_key_2'] = b'edited_test_value_2'
-        edited_test_items[b'cancelable_key_2'] = b'cancelable_value_2'
-        edited_test_items[b'test_key_4'] = b'edited_test_value_4'
+        edited_test_items[b"cancelable_key_1"] = b"cancelable_value_1"
+        edited_test_items[b"test_key_2"] = b"edited_test_value_2"
+        edited_test_items[b"cancelable_key_2"] = b"cancelable_value_2"
+        edited_test_items[b"test_key_4"] = b"edited_test_value_4"
 
         count = 0
         print("before cancel")

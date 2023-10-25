@@ -1,41 +1,48 @@
 import functools
+import gc
 import urllib.parse
 from pathlib import Path
-from typing import Tuple, Any, Optional
+from typing import Any, Optional, Tuple
 
-import gc
 import lmdb
 
-from kona.key_value_store import KeyValueStoreError
-from kona.key_value_store import KeyValueStoreWriteBatch, KeyValueStoreCancelableWriteBatch, KeyValueStore
-from kona.key_value_store import _validate_args_bytes, _validate_args_bytes_without_first
+from kona.key_value_store import (
+    KeyValueStore,
+    KeyValueStoreCancelableWriteBatch,
+    KeyValueStoreError,
+    KeyValueStoreWriteBatch,
+    _validate_args_bytes,
+    _validate_args_bytes_without_first,
+)
 
-lmdb_exceptions = [lmdb.Error,
-                   lmdb.KeyExistsError,
-                   lmdb.NotFoundError,
-                   lmdb.PageNotFoundError,
-                   lmdb.CorruptedError,
-                   lmdb.PanicError,
-                   lmdb.VersionMismatchError,
-                   lmdb.InvalidError,
-                   lmdb.MapFullError,
-                   lmdb.DbsFullError,
-                   lmdb.ReadersFullError,
-                   lmdb.TlsFullError,
-                   lmdb.TxnFullError,
-                   lmdb.CursorFullError,
-                   lmdb.PageFullError,
-                   lmdb.MapResizedError,
-                   lmdb.IncompatibleError,
-                   lmdb.BadDbiError,
-                   lmdb.BadRslotError,
-                   lmdb.BadTxnError,
-                   lmdb.BadValsizeError,
-                   lmdb.ReadonlyError,
-                   lmdb.InvalidParameterError,
-                   lmdb.LockError,
-                   lmdb.MemoryError,
-                   lmdb.DiskError]
+lmdb_exceptions = [
+    lmdb.Error,
+    lmdb.KeyExistsError,
+    lmdb.NotFoundError,
+    lmdb.PageNotFoundError,
+    lmdb.CorruptedError,
+    lmdb.PanicError,
+    lmdb.VersionMismatchError,
+    lmdb.InvalidError,
+    lmdb.MapFullError,
+    lmdb.DbsFullError,
+    lmdb.ReadersFullError,
+    lmdb.TlsFullError,
+    lmdb.TxnFullError,
+    lmdb.CursorFullError,
+    lmdb.PageFullError,
+    lmdb.MapResizedError,
+    lmdb.IncompatibleError,
+    lmdb.BadDbiError,
+    lmdb.BadRslotError,
+    lmdb.BadTxnError,
+    lmdb.BadValsizeError,
+    lmdb.ReadonlyError,
+    lmdb.InvalidParameterError,
+    lmdb.LockError,
+    lmdb.MemoryError,
+    lmdb.DiskError,
+]
 
 
 def _error_convert(func):
@@ -107,7 +114,7 @@ class _KeyValueStoreCancelableWriteBatchLMDB(KeyValueStoreCancelableWriteBatch):
 class KeyValueStoreLMDB(KeyValueStore):
     def __init__(self, uri: str, **kwargs):
         uri_obj = urllib.parse.urlparse(uri)
-        if uri_obj.scheme != 'file':
+        if uri_obj.scheme != "file":
             raise ValueError(f"Support file path URI only (ex. file:///xxx/xxx). uri={uri}")
         self._path = f"{(uri_obj.netloc if uri_obj.netloc else '')}{uri_obj.path}"
         self._db = self._new_db(self._path, **kwargs)
@@ -116,9 +123,24 @@ class KeyValueStoreLMDB(KeyValueStore):
     def _lmdb_options(**kwargs):
         valid_options = {}
         for key, value in kwargs.items():
-            if key in ['path', 'map_size', 'subdir', 'readonly', 'metasync', 'sync',
-                       'map_async', 'mode', 'create', 'readahead', 'writemap', 'meminit',
-                       'max_readers', 'max_dbs', 'max_spare_txns', 'lock']:
+            if key in [
+                "path",
+                "map_size",
+                "subdir",
+                "readonly",
+                "metasync",
+                "sync",
+                "map_async",
+                "mode",
+                "create",
+                "readahead",
+                "writemap",
+                "meminit",
+                "max_readers",
+                "max_dbs",
+                "max_spare_txns",
+                "lock",
+            ]:
                 valid_options[key] = value
         return valid_options
 
@@ -194,12 +216,12 @@ class KeyValueStoreLMDB(KeyValueStore):
         :param kwargs:  # This parameter is not handled in lmdb
         :return:
         """
-        if 'start' in kwargs or 'stop' in kwargs:
+        if "start" in kwargs or "stop" in kwargs:
             raise ValueError("Use start_key and stop_key arguments instead of start and stop arguments")
 
         with self._db.begin() as txn:
             with txn.cursor() as cursor:
-                cursor.set_range(start_key or b'')
+                cursor.set_range(start_key or b"")
 
                 for key, value in cursor:
                     yield key, value
