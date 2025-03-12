@@ -44,7 +44,6 @@ lmdb_exceptions = [
     lmdb.DiskError,
 ]
 
-
 def _error_convert(func):
     @functools.wraps(func)
     def _wrapper(*args, **kwargs):
@@ -54,9 +53,7 @@ def _error_convert(func):
             if type(e) in lmdb_exceptions:
                 raise KeyValueStoreError(e)
             raise e
-
     return _wrapper
-
 
 class _KeyValueStoreWriteBatchLMDB(KeyValueStoreWriteBatch):
     def __init__(self, db: lmdb.Environment):
@@ -85,7 +82,6 @@ class _KeyValueStoreWriteBatchLMDB(KeyValueStoreWriteBatch):
     def write(self):
         self._txn.commit()
 
-
 class _KeyValueStoreCancelableWriteBatchLMDB(KeyValueStoreCancelableWriteBatch):
     def __init__(self, store: KeyValueStore, db: lmdb.Environment):
         super().__init__(store)
@@ -95,7 +91,6 @@ class _KeyValueStoreCancelableWriteBatchLMDB(KeyValueStoreCancelableWriteBatch):
     def _touch(self, key: bytes):
         if key in self._original_items:
             return
-
         value = self._db.begin().get(key, None)
         self._original_items[key] = value
 
@@ -109,7 +104,6 @@ class _KeyValueStoreCancelableWriteBatchLMDB(KeyValueStoreCancelableWriteBatch):
 
     def close(self):
         self._original_items: Optional[dict] = None
-
 
 class KeyValueStoreLMDB(KeyValueStore):
     def __init__(self, uri: str, **kwargs):
@@ -153,7 +147,6 @@ class KeyValueStoreLMDB(KeyValueStore):
     def get(self, key: bytes, *, default=None, **kwargs) -> bytes:
         if default is not None:
             _validate_args_bytes(default)
-
         with self._db.begin() as txn:
             result = txn.get(key, default)
             if result is None:
@@ -182,7 +175,6 @@ class KeyValueStoreLMDB(KeyValueStore):
     @_error_convert
     def destroy_store(self):
         self.close()
-
         def rm_tree(path: Path):
             for child in path.iterdir():
                 if child.is_file():
@@ -190,7 +182,6 @@ class KeyValueStoreLMDB(KeyValueStore):
                 else:
                     rm_tree(child)
             path.rmdir()
-
         rm_tree(Path(self._path))
 
     @_validate_args_bytes_without_first
@@ -208,21 +199,11 @@ class KeyValueStoreLMDB(KeyValueStore):
 
     @_error_convert
     def Iterator(self, start_key: bytes = None, stop_key: bytes = None, include_value: bool = True, **kwargs):
-        """Get Iterator
-
-        :param start_key:
-        :param stop_key:
-        :param include_value:  # This parameter is not handled in lmdb
-        :param kwargs:  # This parameter is not handled in lmdb
-        :return:
-        """
         if "start" in kwargs or "stop" in kwargs:
             raise ValueError("Use start_key and stop_key arguments instead of start and stop arguments")
-
         with self._db.begin() as txn:
             with txn.cursor() as cursor:
                 cursor.set_range(start_key or b"")
-
                 for key, value in cursor:
                     yield key, value
                     if stop_key and stop_key == key:
