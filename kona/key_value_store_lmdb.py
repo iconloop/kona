@@ -15,36 +15,34 @@ from kona.key_value_store import (
     _validate_args_bytes_without_first,
 )
 
-lmdb_exceptions = frozenset([
+lmdb_exceptions = (
     lmdb.Error, lmdb.KeyExistsError, lmdb.NotFoundError, lmdb.PageNotFoundError,
     lmdb.CorruptedError, lmdb.PanicError, lmdb.VersionMismatchError, lmdb.InvalidError,
     lmdb.MapFullError, lmdb.DbsFullError, lmdb.ReadersFullError, lmdb.TlsFullError,
     lmdb.TxnFullError, lmdb.CursorFullError, lmdb.PageFullError, lmdb.MapResizedError,
     lmdb.IncompatibleError, lmdb.BadDbiError, lmdb.BadRslotError, lmdb.BadTxnError,
-    lmdb.BadValsizeError, lmdb.ReadonlyError, lmdb.InvalidParameterError,
-    lmdb.LockError, lmdb.MemoryError, lmdb.DiskError
-])
+    lmdb.BadValsizeError, lmdb.ReadonlyError, lmdb.InvalidParameterError, lmdb.LockError,
+    lmdb.MemoryError, lmdb.DiskError,
+)
+
 
 def _error_convert(func):
     @functools.wraps(func)
     def _wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
+        except lmdb_exceptions as e:
+            raise KeyValueStoreError(e)
         except Exception as e:
-            if isinstance(e, tuple(lmdb_exceptions)):
-                raise KeyValueStoreError(e)
-            raise
+            raise e
+
     return _wrapper
 
 
 class _KeyValueStoreWriteBatchLMDB(KeyValueStoreWriteBatch):
     def __init__(self, db: lmdb.Environment):
         self._db = db
-        self._txn = self._new_txn()
-
-    @_error_convert
-    def _new_txn(self):
-        return self._db.begin(write=True)
+        self._txn = self._db.begin(write=True)
 
     @_validate_args_bytes_without_first
     @_error_convert
@@ -75,9 +73,6 @@ class _KeyValueStoreCancelableWriteBatchLMDB(KeyValueStoreCancelableWriteBatch):
         if key not in self._original_items:
             self._original_items[key] = self._db.begin().get(key, None)
 
-    def _get_original_touched_item(self):
-        yield from self._original_items.items()
-
     def clear(self):
         super().clear()
         self._original_items.clear()
@@ -87,26 +82,25 @@ class _KeyValueStoreCancelableWriteBatchLMDB(KeyValueStoreCancelableWriteBatch):
 
 
 class KeyValueStoreLMDB(KeyValueStore):
-    _VALID_OPTIONS = frozenset([
-        "path", "map_size", "subdir", "readonly", "metasync", "sync", 
-        "map_async", "mode", "create", "readahead", "writemap", "meminit",
-        "max_readers", "max_dbs", "max_spare_txns", "lock"
-    ])
-
     def __init__(self, uri: str, **kwargs):
         uri_obj = urllib.parse.urlparse(uri)
         if uri_obj.scheme != "file":
             raise ValueError(f"Support file path URI only (ex. file:///xxx/xxx). uri={uri}")
-        self._path = uri_obj.netloc + uri_obj.path
+        self._path = f"{(uri_obj.netloc if uri_obj.netloc else '')}{uri_obj.path}"
         self._db = self._new_db(self._path, **kwargs)
 
     @staticmethod
     def _lmdb_options(**kwargs):
-        return {k: v for k, v in kwargs.items() if k in KeyValueStoreLMDB._VALID_OPTIONS}
+        valid_keys = {
+            "path", "map_size", "subdir", "readonly", "metasync", "sync", "map_async",
+            "mode", "create", "readahead", "writemap", "meminit", "max_readers",
+            "max_dbs", "max_spare_txns", "lock",
+        }
+        return {k: v for k, v in kwargs.items() if k in valid_keys}
 
     @_error_convert
     def _new_db(self, path, **kwargs) -> lmdb.Environment:
-        return lmdb.Environment(path, **KeyValueStoreLMDB._lmdb_options(**kwargs))
+        return lmdb.Environment(path, **self._lmdb_options(**kwargs))
 
     @_validate_args_bytes_without_first
     @_error_convert
@@ -142,7 +136,6 @@ class KeyValueStoreLMDB(KeyValueStore):
     @_error_convert
     def destroy_store(self):
         self.close()
-
         def rm_tree(path: Path):
             for child in path.iterdir():
                 if child.is_file():
@@ -168,20 +161,13 @@ class KeyValueStoreLMDB(KeyValueStore):
 
     @_error_convert
     def Iterator(self, start_key: bytes = None, stop_key: bytes = None, include_value: bool = True, **kwargs):
-        """Get Iterator
-
-        :param start_key:
-        :param stop_key:
-        :param include_value:  # This parameter is not handled in lmdb
-        :param kwargs:  # This parameter is not handled in lmdb
-        :return:
-        """
-        if {"start", "stop"} & kwargs.keys():
+        if "start" in kwargs or "stop" in kwargs:
             raise ValueError("Use start_key and stop_key arguments instead of start and stop arguments")
 
-        with self._db.begin() as txn, txn.cursor() as cursor:
-            cursor.set_range(start_key or b"")
-            for key, value in cursor:
-                if stop_key and stop_key == key:
-                    break
-                yield key, value
+        with self._db.begin() as txn:
+            with txn.cursor() as cursor:
+                cursor.set_range(start_key or b"")
+                for key, value in cursor:
+                    yield key, value
+                    if stop_key and stop_key == key:
+                        return
