@@ -85,25 +85,22 @@ class _KeyValueStoreWriteBatchLMDB(KeyValueStoreWriteBatch):
 class _KeyValueStoreCancelableWriteBatchLMDB(KeyValueStoreCancelableWriteBatch):
     def __init__(self, store: KeyValueStore, db: lmdb.Environment):
         super().__init__(store)
-        self._original_items = dict()
+        self._original_items = {}
         self._db = db
 
     def _touch(self, key: bytes):
-        if key in self._original_items:
-            return
-        value = self._db.begin().get(key, None)
-        self._original_items[key] = value
+        if key not in self._original_items:
+            self._original_items[key] = self._db.begin().get(key, None)
 
     def _get_original_touched_item(self):
-        for key, value in self._original_items.items():
-            yield key, value
+        yield from self._original_items.items()
 
     def clear(self):
         super().clear()
         self._original_items.clear()
 
     def close(self):
-        self._original_items: Optional[dict] = None
+        self._original_items = None
 
 class KeyValueStoreLMDB(KeyValueStore):
     def __init__(self, uri: str, **kwargs):
@@ -115,28 +112,11 @@ class KeyValueStoreLMDB(KeyValueStore):
 
     @staticmethod
     def _lmdb_options(**kwargs):
-        valid_options = {}
-        for key, value in kwargs.items():
-            if key in [
-                "path",
-                "map_size",
-                "subdir",
-                "readonly",
-                "metasync",
-                "sync",
-                "map_async",
-                "mode",
-                "create",
-                "readahead",
-                "writemap",
-                "meminit",
-                "max_readers",
-                "max_dbs",
-                "max_spare_txns",
-                "lock",
-            ]:
-                valid_options[key] = value
-        return valid_options
+        valid_keys = {
+            "path", "map_size", "subdir", "readonly", "metasync", "sync", "map_async", "mode", "create",
+            "readahead", "writemap", "meminit", "max_readers", "max_dbs", "max_spare_txns", "lock"
+        }
+        return {key: value for key, value in kwargs.items() if key in valid_keys}
 
     @_error_convert
     def _new_db(self, path, **kwargs) -> lmdb.Environment:
